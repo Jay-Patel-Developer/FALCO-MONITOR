@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package falco;
+
+option go_package = "./pb;pb";
+
+service OutputService {
+  rpc Sub(Request) returns (stream Response) {}
+}
+
+message Request {}
+
+message Response {
+  string time = 1;
+  string priority = 2;
+  string rule = 3;
+  string output = 4;
+  string source = 5;
+  string hostname = 6;
+  string tags = 7;
+  string event = 8;
+}
