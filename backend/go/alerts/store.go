@@ -2,6 +2,7 @@ package alerts
 
 import (
 	"sync"
+
 	pb "github.com/Jay-Patel-Developer/FALCO-MONITOR/backend/go/pb"
 )
 

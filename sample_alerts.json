@@ -1,0 +1,197 @@
+[
+  {
+    "time": "2025-06-29T16:30:01Z",
+    "priority": "critical",
+    "rule": "Terminal shell in container",
+    "output": "A shell was spawned in a container (user=root command=sh container_id=abc123)",
+    "output_fields": {
+      "user.name": "root",
+      "proc.cmdline": "sh",
+      "container.id": "abc123"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:02Z",
+    "priority": "warning",
+    "rule": "Write below etc",
+    "output": "File below /etc opened for writing (user=admin file=/etc/passwd)",
+    "output_fields": {
+      "user.name": "admin",
+      "fd.name": "/etc/passwd"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:03Z",
+    "priority": "error",
+    "rule": "Change thread namespace",
+    "output": "Thread namespace changed (user=appuser pid=1234)",
+    "output_fields": {
+      "user.name": "appuser",
+      "proc.pid": 1234
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:04Z",
+    "priority": "notice",
+    "rule": "K8s exec in pod",
+    "output": "Kubernetes exec/attach detected (user=dev pod=web-1 namespace=default)",
+    "output_fields": {
+      "user.name": "dev",
+      "k8s.pod.name": "web-1",
+      "k8s.ns.name": "default"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:05Z",
+    "priority": "critical",
+    "rule": "Suspicious network activity",
+    "output": "Outbound connection to suspicious IP (ip=10.0.0.66 port=4444)",
+    "output_fields": {
+      "fd.sip": "10.0.0.66",
+      "fd.sport": 4444
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:06Z",
+    "priority": "info",
+    "rule": "Unexpected outbound connection",
+    "output": "Unexpected outbound connection detected (user=sysop ip=192.168.1.10)",
+    "output_fields": {
+      "user.name": "sysop",
+      "fd.sip": "192.168.1.10"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:07Z",
+    "priority": "critical",
+    "rule": "File deleted in /bin",
+    "output": "File deleted in /bin (user=root file=/bin/ls)",
+    "output_fields": {
+      "user.name": "root",
+      "fd.name": "/bin/ls"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:08Z",
+    "priority": "warning",
+    "rule": "Kernel module loaded",
+    "output": "Kernel module loaded (user=admin module=malicious.ko)",
+    "output_fields": {
+      "user.name": "admin",
+      "module.name": "malicious.ko"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:09Z",
+    "priority": "error",
+    "rule": "User added to sudoers",
+    "output": "User added to sudoers (user=dev)",
+    "output_fields": {
+      "user.name": "dev"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:10Z",
+    "priority": "notice",
+    "rule": "SSH connection established",
+    "output": "SSH connection established (user=appuser ip=10.0.0.2)",
+    "output_fields": {
+      "user.name": "appuser",
+      "fd.sip": "10.0.0.2"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:11Z",
+    "priority": "critical",
+    "rule": "Sensitive file read",
+    "output": "Sensitive file read (user=root file=/etc/shadow)",
+    "output_fields": {
+      "user.name": "root",
+      "fd.name": "/etc/shadow"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:12Z",
+    "priority": "warning",
+    "rule": "Container escape attempt",
+    "output": "Container escape attempt detected (user=admin)",
+    "output_fields": {
+      "user.name": "admin"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:13Z",
+    "priority": "error",
+    "rule": "Privileged command executed",
+    "output": "Privileged command executed (user=dev command=sudo su)",
+    "output_fields": {
+      "user.name": "dev",
+      "proc.cmdline": "sudo su"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:14Z",
+    "priority": "notice",
+    "rule": "Unexpected process tree",
+    "output": "Unexpected process tree detected (user=appuser)",
+    "output_fields": {
+      "user.name": "appuser"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:15Z",
+    "priority": "critical",
+    "rule": "Suspicious DNS query",
+    "output": "Suspicious DNS query (domain=malicious.com)",
+    "output_fields": {
+      "fd.name": "malicious.com"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:16Z",
+    "priority": "info",
+    "rule": "Outbound connection to TOR",
+    "output": "Outbound connection to TOR node (ip=185.220.101.1)",
+    "output_fields": {
+      "fd.sip": "185.220.101.1"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:17Z",
+    "priority": "critical",
+    "rule": "Unusual file permission change",
+    "output": "Unusual file permission change (user=root file=/etc/shadow)",
+    "output_fields": {
+      "user.name": "root",
+      "fd.name": "/etc/shadow"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:18Z",
+    "priority": "warning",
+    "rule": "Binary written to /tmp",
+    "output": "Binary written to /tmp (user=admin file=/tmp/evil.bin)",
+    "output_fields": {
+      "user.name": "admin",
+      "fd.name": "/tmp/evil.bin"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:19Z",
+    "priority": "error",
+    "rule": "Reverse shell detected",
+    "output": "Reverse shell detected (user=dev)",
+    "output_fields": {
+      "user.name": "dev"
+    }
+  },
+  {
+    "time": "2025-06-29T16:30:20Z",
+    "priority": "notice",
+    "rule": "Suspicious cron job",
+    "output": "Suspicious cron job created (user=appuser)",
+    "output_fields": {
+      "user.name": "appuser"
+    }
+  }
+]

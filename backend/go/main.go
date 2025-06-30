@@ -10,8 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	pb "github.com/Jay-Patel-Developer/FALCO-MONITOR/backend/go/pb"
 	"github.com/Jay-Patel-Developer/FALCO-MONITOR/backend/go/alerts"
+	pb "github.com/Jay-Patel-Developer/FALCO-MONITOR/backend/go/pb"
 )
 
 func main() {
