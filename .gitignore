@@ -49,3 +49,6 @@ backend/go/pb/*.pb.go
 # Docker
 **/.docker/
 **/docker-compose.override.yml
+
+# Ignore grafana directory
+/grafana/

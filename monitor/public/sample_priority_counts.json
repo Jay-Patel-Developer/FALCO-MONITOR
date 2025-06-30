@@ -1,0 +1,7 @@
+[
+  { "priority": "critical", "count": 12 },
+  { "priority": "error", "count": 8 },
+  { "priority": "warning", "count": 15 },
+  { "priority": "notice", "count": 6 },
+  { "priority": "info", "count": 20 }
+]

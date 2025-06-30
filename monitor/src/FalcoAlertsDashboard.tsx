@@ -14,9 +14,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import SecurityIcon from '@mui/icons-material/Security';
 import Stack from '@mui/material/Stack';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 const priorityColor: Record<string, "error" | "warning" | "secondary" | "info" | "primary" | "default"> = {
   critical: "error",
@@ -72,7 +69,7 @@ function AlertDetailsDialog({ open, alert, onClose }: { open: boolean, alert: Al
             </Box>
             <Box>
               <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 700 }}>Time</Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>{alert.time}</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>{dayjs(alert.time).isValid() ? dayjs(alert.time).format('YYYY-MM-DD HH:mm:ss') : alert.time}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 700 }}>Priority</Typography>
@@ -92,8 +89,8 @@ function AlertDetailsDialog({ open, alert, onClose }: { open: boolean, alert: Al
                   </IconButton>
                 </Tooltip>
               </Box>
-              <Box sx={{ bgcolor: theme => theme.palette.mode === 'dark' ? '#181f2a' : '#f5f6fa', p: 2, borderRadius: 2, fontFamily: 'monospace', fontSize: 14, overflowX: 'auto', boxShadow: 1 }}>
-                <pre style={{ margin: 0, background: 'none', padding: 0, fontFamily: 'inherit', fontSize: 'inherit' }}>
+              <Box sx={{ bgcolor: theme => theme.palette.mode === 'dark' ? '#232b36' : '#f5f6fa', p: 2, borderRadius: 2, fontFamily: 'monospace', fontSize: 14, overflowX: 'auto', boxShadow: 1, color: theme => theme.palette.text.primary }}>
+                <pre style={{ margin: 0, background: 'none', padding: 0, fontFamily: 'inherit', fontSize: 'inherit', color: 'inherit' }}>
                   {JSON.stringify(alert.output_fields, null, 2)}
                 </pre>
               </Box>
@@ -116,34 +113,16 @@ export default function FalcoAlertsDashboard() {
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'rule'>('time');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
-
-  const theme = createTheme({
-    palette: {
-      mode,
-      ...(mode === 'dark'
-        ? {
-            background: { default: '#101624', paper: '#1e2330' },
-            primary: { main: '#1976d2' },
-            secondary: { main: '#90caf9' },
-          }
-        : {
-            background: { default: '#f5f6fa', paper: '#fff' },
-            primary: { main: '#1976d2' },
-            secondary: { main: '#1976d2' },
-          }),
-    },
-    shape: { borderRadius: 10 },
-  });
 
   useEffect(() => {
-    fetch("/sample_alerts.json")
-      .then(res => res.json())
-      .then((data: Alert[]) => {
-        setAlerts(data);
-        // Extract unique rules for filter dropdown
-        setRules(Array.from(new Set(data.map(a => a.rule))).sort());
-      });
+    // Connect to backend WebSocket for live alerts
+    const ws = new WebSocket('ws://localhost:8080/ws/alerts');
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setAlerts(data);
+      setRules(Array.from(new Set(data.map((a: Alert) => a.rule))).sort());
+    };
+    return () => ws.close();
   }, []);
 
   // Securely filter alerts
@@ -194,231 +173,179 @@ export default function FalcoAlertsDashboard() {
     setSearch("");
   };
 
-  // Summary counts by priority
-  const summary = ["critical", "warning", "error", "notice", "info"].map(p => ({
-    label: p.charAt(0).toUpperCase() + p.slice(1),
-    value: alerts.filter(a => a.priority === p).length,
-    color: priorityColor[p] || "default"
-  }));
-
   return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ width: '100vw', px: 0, pt: 0, bgcolor: 'background.default', minHeight: '100vh' }}>
-        <AppBar position="sticky" elevation={4} sx={{
-          top: 0,
-          left: 0,
-          zIndex: (theme) => theme.zIndex.appBar,
-          borderRadius: 0,
-          mb: 0,
-          background: mode === 'dark'
-            ? 'linear-gradient(90deg, #101624 0%, #1976d2 100%)'
-            : 'linear-gradient(90deg, #1e293b 0%, #1976d2 100%)',
-          boxShadow: '0 4px 24px 0 rgba(30,41,59,0.18)'
-        }}>
-          <Toolbar sx={{ minHeight: 80, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <SecurityIcon sx={{ fontSize: 44, color: 'white', mr: 1, filter: 'drop-shadow(0 2px 8px #1976d2)' }} />
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 900,
-                  letterSpacing: 2,
-                  color: 'white',
-                  textShadow: '0 2px 8px rgba(25,118,210,0.25)',
-                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                  textAlign: 'center',
-                  lineHeight: 1.1
-                }}
+    <Box sx={{ width: '100vw', px: 0, pt: 0, bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Box sx={{ pt: 1, mt: 1, width: '100vw', px: 0 }}>
+        <Card elevation={3} sx={{ mb: 3, p: 2, borderRadius: 3, bgcolor: 'background.paper', boxShadow: 3, width: { xs: '98vw', sm: '98vw', md: '100vw' }, maxWidth: '100vw' }}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} useFlexGap flexWrap="wrap" alignItems="center" justifyContent="flex-start">
+            <FormControl sx={{ minWidth: 160, maxWidth: 240, flex: 2 }} size="small">
+              <InputLabel>Priority</InputLabel>
+              <Select
+                multiple
+                value={priority}
+                label="Priority"
+                onChange={e => setPriority(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value as string[])}
+                renderValue={(selected) => (selected as string[]).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}
               >
-                FalcoGuard
-                <Typography component="span" variant="h5" sx={{ ml: 2, color: 'grey.200', fontWeight: 400, letterSpacing: 1 }}>
-                  Real-Time Security Alert Dashboard
-                </Typography>
-              </Typography>
-            </Box>
-            <Stack direction="row" spacing={1} sx={{ mr: 2, alignItems: 'center' }}>
-              {summary.map(s => (
-                <Chip
-                  key={s.label}
-                  label={<><b>{s.label}</b>: {s.value}</>}
-                  color={priorityColor[s.label.toLowerCase()] || 'default'}
-                  variant="filled"
-                  sx={{ fontWeight: 600, fontSize: '1rem', px: 1.5, bgcolor: s.color + '.main', color: 'white', boxShadow: 1 }}
-                />
-              ))}
-              <IconButton
-                sx={{ ml: 2, color: 'white', bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
-                onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
-                aria-label="toggle dark mode"
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="critical">Critical</MenuItem>
+                <MenuItem value="warning">Warning</MenuItem>
+                <MenuItem value="error">Error</MenuItem>
+                <MenuItem value="notice">Notice</MenuItem>
+                <MenuItem value="info">Info</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ minWidth: 160, maxWidth: 240, flex: 2 }} size="small">
+              <InputLabel>Rule</InputLabel>
+              <Select
+                multiple
+                value={rule}
+                label="Rule"
+                onChange={e => setRule(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value as string[])}
+                renderValue={(selected) => (selected as string[]).join(', ')}
               >
-                {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-              </IconButton>
-            </Stack>
-          </Toolbar>
-        </AppBar>
-        <Box sx={{ pt: 1, mt: 1, width: '100vw', px: 0 }}>
-          <Card elevation={3} sx={{ mb: 3, p: 2, borderRadius: 3, bgcolor: 'background.paper', boxShadow: 3, width: { xs: '98vw', sm: '98vw', md: '100vw' }, maxWidth: '100vw' }}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} useFlexGap flexWrap="wrap" alignItems="center" justifyContent="flex-start">
-              <FormControl sx={{ minWidth: 160, maxWidth: 240, flex: 2 }} size="small">
-                <InputLabel>Priority</InputLabel>
-                <Select
-                  multiple
-                  value={priority}
-                  label="Priority"
-                  onChange={e => setPriority(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value as string[])}
-                  renderValue={(selected) => (selected as string[]).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="critical">Critical</MenuItem>
-                  <MenuItem value="warning">Warning</MenuItem>
-                  <MenuItem value="error">Error</MenuItem>
-                  <MenuItem value="notice">Notice</MenuItem>
-                  <MenuItem value="info">Info</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl sx={{ minWidth: 160, maxWidth: 240, flex: 2 }} size="small">
-                <InputLabel>Rule</InputLabel>
-                <Select
-                  multiple
-                  value={rule}
-                  label="Rule"
-                  onChange={e => setRule(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value as string[])}
-                  renderValue={(selected) => (selected as string[]).join(', ')}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {rules.map(r => (
-                    <MenuItem key={r} value={r}>{r}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Start Date"
-                  value={startDate}
-                  onChange={setStartDate}
-                  slotProps={{ textField: { size: 'small', sx: { minWidth: 110, maxWidth: 140 } } }}
-                />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="End Date"
-                  value={endDate}
-                  onChange={setEndDate}
-                  slotProps={{ textField: { size: 'small', sx: { minWidth: 110, maxWidth: 140 } } }}
-                />
-              </LocalizationProvider>
-              <TextField
-                label="Search alerts"
-                variant="outlined"
-                size="small"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                sx={{ minWidth: 140, maxWidth: 220, flex: 2 }}
+                <MenuItem value="">All</MenuItem>
+                {rules.map(r => (
+                  <MenuItem key={r} value={r}>{r}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={setStartDate}
+                slotProps={{ textField: { size: 'small', sx: { minWidth: 110, maxWidth: 140 } } }}
               />
-              <Button variant="contained" color="secondary" onClick={handleResetFilters} sx={{ height: 40, fontWeight: 600, minWidth: 120 }}>
-                Reset Filters
-              </Button>
-            </Stack>
-          </Card>
-          <Paper elevation={2} sx={{ borderRadius: 3, overflow: 'hidden', width: '100vw', maxWidth: '100vw' }}>
-            <TableContainer>
-              <Table>
-                <TableHead sx={{
-                  bgcolor: (theme) => theme.palette.mode === 'dark' ? theme.palette.background.paper : '#f3f6fa',
-                  '& .MuiTableCell-root': {
-                    color: (theme) => theme.palette.text.primary,
-                    background: 'inherit',
-                    borderBottom: (theme) => `2px solid ${theme.palette.divider}`,
-                  }
-                }}>
+            </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="End Date"
+                value={endDate}
+                onChange={setEndDate}
+                slotProps={{ textField: { size: 'small', sx: { minWidth: 110, maxWidth: 140 } } }}
+              />
+            </LocalizationProvider>
+            <TextField
+              label="Search alerts"
+              variant="outlined"
+              size="small"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              sx={{ minWidth: 140, maxWidth: 220, flex: 2 }}
+            />
+            <Button variant="contained" color="secondary" onClick={handleResetFilters} sx={{ height: 40, fontWeight: 600, minWidth: 120 }}>
+              Reset Filters
+            </Button>
+          </Stack>
+        </Card>
+        <Paper elevation={2} sx={{ borderRadius: 3, overflow: 'hidden', width: '100vw', maxWidth: '100vw' }}>
+          <TableContainer>
+            <Table>
+              <TableHead sx={{
+                bgcolor: (theme) => theme.palette.mode === 'dark' ? theme.palette.background.paper : '#f3f6fa',
+                '& .MuiTableCell-root': {
+                  color: (theme) => theme.palette.text.primary,
+                  background: 'inherit',
+                  borderBottom: (theme) => `2px solid ${theme.palette.divider}`,
+                }
+              }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700 }}> 
+                    <TableSortLabel
+                      active={sortBy === 'time'}
+                      direction={sortBy === 'time' ? sortDirection : 'asc'}
+                      onClick={() => {
+                        setSortBy('time');
+                        setSortDirection(sortBy === 'time' && sortDirection === 'asc' ? 'desc' : 'asc');
+                      }}
+                    >
+                      Time
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>
+                    <TableSortLabel
+                      active={sortBy === 'priority'}
+                      direction={sortBy === 'priority' ? sortDirection : 'asc'}
+                      onClick={() => {
+                        setSortBy('priority');
+                        setSortDirection(sortBy === 'priority' && sortDirection === 'asc' ? 'desc' : 'asc');
+                      }}
+                    >
+                      Priority
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>
+                    <TableSortLabel
+                      active={sortBy === 'rule'}
+                      direction={sortBy === 'rule' ? sortDirection : 'asc'}
+                      onClick={() => {
+                        setSortBy('rule');
+                        setSortDirection(sortBy === 'rule' && sortDirection === 'asc' ? 'desc' : 'asc');
+                      }}
+                    >
+                      Rule
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Output</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sortedAlerts.length === 0 ? (
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 700 }}> 
-                      <TableSortLabel
-                        active={sortBy === 'time'}
-                        direction={sortBy === 'time' ? sortDirection : 'asc'}
-                        onClick={() => {
-                          setSortBy('time');
-                          setSortDirection(sortBy === 'time' && sortDirection === 'asc' ? 'desc' : 'asc');
-                        }}
-                      >
-                        Time
-                      </TableSortLabel>
+                    <TableCell colSpan={5} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                      No alerts found.
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>
-                      <TableSortLabel
-                        active={sortBy === 'priority'}
-                        direction={sortBy === 'priority' ? sortDirection : 'asc'}
-                        onClick={() => {
-                          setSortBy('priority');
-                          setSortDirection(sortBy === 'priority' && sortDirection === 'asc' ? 'desc' : 'asc');
-                        }}
-                      >
-                        Priority
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>
-                      <TableSortLabel
-                        active={sortBy === 'rule'}
-                        direction={sortBy === 'rule' ? sortDirection : 'asc'}
-                        onClick={() => {
-                          setSortBy('rule');
-                          setSortDirection(sortBy === 'rule' && sortDirection === 'asc' ? 'desc' : 'asc');
-                        }}
-                      >
-                        Rule
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Output</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 700 }}>Actions</TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedAlerts.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} align="center" sx={{ py: 6, color: 'text.secondary' }}>
-                        No alerts found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    sortedAlerts.map((alert, idx) => (
-                      <TableRow key={idx} hover sx={{ transition: 'background 0.2s', '&:hover': { bgcolor: 'grey.50' } }}>
-                        <TableCell>{alert.time}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={alert.priority}
-                            color={priorityColor[alert.priority] || "default"}
-                            size="small"
-                            sx={{ fontWeight: 600, letterSpacing: 0.5 }}
-                          />
-                        </TableCell>
-                        <TableCell>{alert.rule}</TableCell>
-                        <TableCell sx={{ maxWidth: 320, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{alert.output}</TableCell>
-                        <TableCell align="right">
-                          <Tooltip title="View Details">
-                            <IconButton onClick={() => setSelectedAlert(alert)}>
-                              <InfoIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Copy JSON">
-                            <IconButton onClick={() => handleCopy(alert)}>
-                              <FileCopyIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-          <AlertDetailsDialog
-            open={!!selectedAlert}
-            alert={selectedAlert}
-            onClose={() => setSelectedAlert(null)}
-          />
-        </Box>
+                ) : (
+                  sortedAlerts.map((alert, idx) => (
+                    <TableRow key={idx} hover sx={{
+  transition: 'background 0.2s, box-shadow 0.2s, border-color 0.2s',
+  borderLeft: theme => `4px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(31,41,55,0.08)'}`,
+  boxShadow: '0 1.5px 4px 0 rgba(31,41,55,0.07), 0 1.5px 4px 0 rgba(31,41,55,0.13)',
+  '&:hover': {
+    bgcolor: theme => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
+    boxShadow: '0 4px 16px 0 rgba(31,41,55,0.18)',
+    borderLeft: theme => `4px solid ${theme.palette.primary.main}`,
+  },
+}}>
+  <TableCell sx={{ fontWeight: 500 }}>{dayjs(alert.time).isValid() ? dayjs(alert.time).format('YYYY-MM-DD HH:mm:ss') : alert.time}</TableCell>
+  <TableCell>
+    <Chip
+      label={alert.priority}
+      color={priorityColor[alert.priority] || "default"}
+      size="small"
+      sx={{ fontWeight: 700, letterSpacing: 0.5, textTransform: 'capitalize', fontFamily: 'inherit' }}
+    />
+  </TableCell>
+  <TableCell sx={{ fontWeight: 600 }}>{alert.rule}</TableCell>
+  <TableCell sx={{ maxWidth: 320, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500 }}>{alert.output}</TableCell>
+  <TableCell align="right">
+    <Tooltip title="View Details">
+      <IconButton onClick={() => setSelectedAlert(alert)}>
+        <InfoIcon />
+      </IconButton>
+    </Tooltip>
+    <Tooltip title="Copy JSON">
+      <IconButton onClick={() => handleCopy(alert)}>
+        <FileCopyIcon />
+      </IconButton>
+    </Tooltip>
+  </TableCell>
+</TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+        <AlertDetailsDialog
+          open={!!selectedAlert}
+          alert={selectedAlert}
+          onClose={() => setSelectedAlert(null)}
+        />
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 }
