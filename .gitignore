@@ -1,0 +1,54 @@
+# Binaries and build output
+**/bin/
+**/build/
+**/dist/
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+*.test
+
+# Go modules
+/go.sum
+
+# Dependency directories (vendor/)
+vendor/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Proto build output
+backend/go/pb/*.pb.go
+
+# Env files
+.env
+.env.*
+
+# Docker
+**/.docker/
+**/docker-compose.override.yml
+
+# Ignore grafana directory
+/grafana/

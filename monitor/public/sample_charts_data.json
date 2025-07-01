@@ -1,0 +1,123 @@
+{
+  "alerts_over_time": [
+    {"timestamp": "2025-06-29T00:00:00Z", "count": 12},
+    {"timestamp": "2025-06-29T01:00:00Z", "count": 8},
+    {"timestamp": "2025-06-29T02:00:00Z", "count": 15},
+    {"timestamp": "2025-06-29T03:00:00Z", "count": 20},
+    {"timestamp": "2025-06-29T04:00:00Z", "count": 7},
+    {"timestamp": "2025-06-29T05:00:00Z", "count": 18},
+    {"timestamp": "2025-06-29T06:00:00Z", "count": 10},
+    {"timestamp": "2025-06-29T07:00:00Z", "count": 14},
+    {"timestamp": "2025-06-29T08:00:00Z", "count": 17},
+    {"timestamp": "2025-06-29T09:00:00Z", "count": 22},
+    {"timestamp": "2025-06-29T10:00:00Z", "count": 19},
+    {"timestamp": "2025-06-29T11:00:00Z", "count": 13},
+    {"timestamp": "2025-06-29T12:00:00Z", "count": 16},
+    {"timestamp": "2025-06-29T13:00:00Z", "count": 21},
+    {"timestamp": "2025-06-29T14:00:00Z", "count": 18},
+    {"timestamp": "2025-06-29T15:00:00Z", "count": 23},
+    {"timestamp": "2025-06-29T16:00:00Z", "count": 20},
+    {"timestamp": "2025-06-29T17:00:00Z", "count": 25},
+    {"timestamp": "2025-06-29T18:00:00Z", "count": 27},
+    {"timestamp": "2025-06-29T19:00:00Z", "count": 24},
+    {"timestamp": "2025-06-29T20:00:00Z", "count": 22},
+    {"timestamp": "2025-06-29T21:00:00Z", "count": 19},
+    {"timestamp": "2025-06-29T22:00:00Z", "count": 15},
+    {"timestamp": "2025-06-29T23:00:00Z", "count": 12}
+  ],
+  "alerts_by_priority": [
+    {"priority": "critical", "count": 15},
+    {"priority": "error", "count": 22},
+    {"priority": "warning", "count": 30},
+    {"priority": "notice", "count": 18},
+    {"priority": "info", "count": 25}
+  ],
+  "top_rules": [
+    {"rule": "Suspicious File Open", "count": 25},
+    {"rule": "Shell Spawned", "count": 20},
+    {"rule": "Network Connection", "count": 18},
+    {"rule": "Unauthorized Access", "count": 16},
+    {"rule": "File Write", "count": 15},
+    {"rule": "Process Injection", "count": 13},
+    {"rule": "K8s API Abuse", "count": 12},
+    {"rule": "Crypto Mining", "count": 10},
+    {"rule": "Sensitive File Read", "count": 9},
+    {"rule": "Outbound Connection", "count": 8}
+  ],
+  "alerts_by_rule_over_time": [
+    {"timestamp": "2025-06-29T00:00:00Z", "rule": "Suspicious File Open", "count": 3},
+    {"timestamp": "2025-06-29T00:00:00Z", "rule": "Shell Spawned", "count": 2},
+    {"timestamp": "2025-06-29T00:00:00Z", "rule": "Network Connection", "count": 1},
+    {"timestamp": "2025-06-29T01:00:00Z", "rule": "Suspicious File Open", "count": 4},
+    {"timestamp": "2025-06-29T01:00:00Z", "rule": "Shell Spawned", "count": 1},
+    {"timestamp": "2025-06-29T01:00:00Z", "rule": "Network Connection", "count": 2},
+    {"timestamp": "2025-06-29T02:00:00Z", "rule": "Network Connection", "count": 5},
+    {"timestamp": "2025-06-29T02:00:00Z", "rule": "Unauthorized Access", "count": 2},
+    {"timestamp": "2025-06-29T03:00:00Z", "rule": "File Write", "count": 3},
+    {"timestamp": "2025-06-29T03:00:00Z", "rule": "Process Injection", "count": 2},
+    {"timestamp": "2025-06-29T04:00:00Z", "rule": "K8s API Abuse", "count": 4},
+    {"timestamp": "2025-06-29T05:00:00Z", "rule": "Crypto Mining", "count": 3},
+    {"timestamp": "2025-06-29T06:00:00Z", "rule": "Sensitive File Read", "count": 2},
+    {"timestamp": "2025-06-29T07:00:00Z", "rule": "Outbound Connection", "count": 1}
+  ],
+  "alerts_by_host": [
+    {"host": "node-1", "count": 22},
+    {"host": "node-2", "count": 18},
+    {"host": "node-3", "count": 25},
+    {"host": "node-4", "count": 15},
+    {"host": "node-5", "count": 12},
+    {"host": "node-6", "count": 10},
+    {"host": "node-7", "count": 8},
+    {"host": "node-8", "count": 6}
+  ],
+  "alerts_heatmap": [
+    {"day": "Monday", "hour": 0, "count": 2},
+    {"day": "Monday", "hour": 1, "count": 5},
+    {"day": "Tuesday", "hour": 2, "count": 7},
+    {"day": "Wednesday", "hour": 3, "count": 3},
+    {"day": "Thursday", "hour": 4, "count": 6},
+    {"day": "Friday", "hour": 5, "count": 8},
+    {"day": "Saturday", "hour": 6, "count": 4},
+    {"day": "Sunday", "hour": 7, "count": 9}
+  ],
+  "alert_status": [
+    {"status": "open", "count": 20},
+    {"status": "acknowledged", "count": 15},
+    {"status": "resolved", "count": 50}
+  ],
+  "top_users": [
+    {"user": "root", "count": 22},
+    {"user": "appuser", "count": 17},
+    {"user": "sysadmin", "count": 15},
+    {"user": "devops", "count": 12},
+    {"user": "falco", "count": 10},
+    {"user": "admin", "count": 8}
+  ],
+  "alerts_by_region": [
+    {"region": "us-east-1", "count": 20},
+    {"region": "eu-west-1", "count": 18},
+    {"region": "ap-south-1", "count": 16},
+    {"region": "us-west-2", "count": 14},
+    {"region": "eu-central-1", "count": 12}
+  ],
+  "alert_correlation": [
+    {"rule1": "Suspicious File Open", "rule2": "Shell Spawned", "count": 8},
+    {"rule1": "Network Connection", "rule2": "Unauthorized Access", "count": 6},
+    {"rule1": "File Write", "rule2": "Process Injection", "count": 5},
+    {"rule1": "K8s API Abuse", "rule2": "Crypto Mining", "count": 4}
+  ],
+  "alert_duration": [
+    {"duration_minutes": 5, "count": 20},
+    {"duration_minutes": 15, "count": 18},
+    {"duration_minutes": 30, "count": 16},
+    {"duration_minutes": 60, "count": 14},
+    {"duration_minutes": 120, "count": 10},
+    {"duration_minutes": 240, "count": 8}
+  ],
+  "dashboard_stats": {
+    "total_alerts_today": 145,
+    "critical_alerts": 15,
+    "unique_rules": 20,
+    "active_hosts": 8
+  }
+}
